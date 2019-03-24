@@ -47,7 +47,7 @@ void ReadDatasets::IniRead(cv::Rect2f &bboxGroundtruth, cv::Mat &frame)
     else if (databaseType == "VOT-2017")
     {
         string folderVOT = "graduate"; //"glove";//"drone1"; //"iceskater1";//"girl"; //"road";//"iceskater1";//"helicopter";//"matrix";//"leaves";//"sheep";//"racing";//"girl";//"road"; //"uav2";//
-        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT;
+        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
         // Read the groundtruth bbox
         groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
         f = 1;

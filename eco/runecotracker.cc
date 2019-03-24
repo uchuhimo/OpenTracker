@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     else if (databaseType == "VOT-2017")
     {
         string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
-        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT;
+        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
         // Read the groundtruth bbox
         groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
         f = 1;
