@@ -328,26 +328,27 @@ int main(int argc, char **argv)
             line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
         }
 */
-        // Display FPS on frameDraw
-        ostringstream os; 
-        os << float(fpseco); 
-        putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
-                0.75, Scalar(255, 0, 255), 2);
+        // // Display FPS on frameDraw
+        // ostringstream os; 
+        // os << float(fpseco); 
+        // putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
+        //         0.75, Scalar(255, 0, 255), 2);
 
-        if (parameters.debug == 0)
-        {
-            imshow("OpenTracker", frameDraw);
-        }
+        // if (parameters.debug == 0)
+        // {
+        //     imshow("OpenTracker", frameDraw);
+        // }
 
-        int c = cvWaitKey(1);
-        if (c != -1)
-            c = c % 256;
-        if (c == 27)
-        {
-            cvDestroyWindow("OpenTracker");
-            exit(1);
-        }
-        waitKey(1);
+        // int c = cvWaitKey(1);
+        // if (c != -1)
+        //     c = c % 256;
+        // if (c == 27)
+        // {
+        //     cvDestroyWindow("OpenTracker");
+        //     exit(1);
+        // }
+        // waitKey(1);
+
         // Read next image======================================================
         cout << "Frame:" << f << " FPS:" << fpseco << endl;
         f++;
