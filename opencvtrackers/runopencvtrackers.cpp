@@ -43,7 +43,7 @@ int main(int argc, char **argv)
         tracker = TrackerGOTURN::create();
 
 // Read from the images ====================================================
-    string path = "/media/elab/sdd/data/TLP/Bike";
+    string path = "/home/yxqiu/data/TLP/Bike";
 	// Read the groundtruth bbox
 	ifstream groundtruth(path + "/groundtruth_rect.txt");
 	int f,x,y,w,h,isLost;

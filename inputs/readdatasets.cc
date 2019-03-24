@@ -47,9 +47,9 @@ void ReadDatasets::IniRead(cv::Rect2f &bboxGroundtruth, cv::Mat &frame)
     else if (databaseType == "VOT-2017")
     {
         string folderVOT = "graduate"; //"glove";//"drone1"; //"iceskater1";//"girl"; //"road";//"iceskater1";//"helicopter";//"matrix";//"leaves";//"sheep";//"racing";//"girl";//"road"; //"uav2";//
-        path = "/media/elab/sdd/data/VOT/vot2017/" + folderVOT;
+        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+        groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x1 = atof(s.c_str());
@@ -78,7 +78,7 @@ void ReadDatasets::IniRead(cv::Rect2f &bboxGroundtruth, cv::Mat &frame)
     }
     else if (databaseType == "TB-2015")
     {
-        path = "/media/elab/sdd/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
+        path = "/home/yxqiu/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
         // some of the dataset has '\t' as the delimiter, so first change it to ','.
         fstream gt(path + "/groundtruth_rect.txt");
         string tmp;
@@ -117,7 +117,7 @@ void ReadDatasets::IniRead(cv::Rect2f &bboxGroundtruth, cv::Mat &frame)
     }
     else if (databaseType == "TLP")
     {
-        path = "/media/elab/sdd/data/TLP/Sam"; //IceSkating";//Drone3";//
+        path = "/home/yxqiu/data/TLP/Sam"; //IceSkating";//Drone3";//
         // Read the groundtruth bbox
         groundtruth = new ifstream(path + "/groundtruth_rect.txt");
         getline(*groundtruth, s, ',');
@@ -140,9 +140,9 @@ void ReadDatasets::IniRead(cv::Rect2f &bboxGroundtruth, cv::Mat &frame)
     else if (databaseType == "UAV123")
     {
         string folderUAV = "bike1"; //"person16"; //"person21";//"wakeboard1";// "person22";//
-        path = "/media/elab/sdd/data/UAV123/data_seq/UAV123/" + folderUAV;
+        path = "/home/yxqiu/data/UAV123/data_seq/UAV123/" + folderUAV;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
+        groundtruth = new ifstream("/home/yxqiu/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x = atof(s.c_str());

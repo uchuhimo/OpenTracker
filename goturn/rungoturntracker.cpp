@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
 
     const string model_file = "nets/deploy.prototxt";
     const string pretrain_file = "nets/goturun_tracker.caffemodel";
-    const string video_folder = "/media/elab/sdd/data/VOT/vot2014";
+    const string video_folder = "/home/yxqiu/data/VOT/vot2014";
     int gpu_id = 1;
 
     Regressor regressor(model_file,pretrain_file,gpu_id, false);

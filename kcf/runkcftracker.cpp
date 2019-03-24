@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 {
     // Database settings
     string databaseTypes[5] = {"Demo","VOT-2017", "TB-2015", "TLP", "UAV123"};
-    string databaseType = databaseTypes[0];
+    string databaseType = databaseTypes[1];
     // Read from the images ====================================================
     int f, isLost;
     float x, y, w, h;
@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     else if (databaseType == "VOT-2017")
     {
         string folderVOT = "girl"; //"iceskater1";//"road";//"drone1";//"iceskater1";//"girl"; //"road";//"bag";////"helicopter";
-        path = "/media/elab/sdd/data/VOT/vot2017/" + folderVOT;
+        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+        groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x1 = atof(s.c_str());
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     }
     else if (databaseType == "TB-2015")
     {
-        path = "/media/elab/sdd/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
+        path = "/home/yxqiu/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
         // some of the dataset has '\t' as the delimiter, so first change it to ','.
         fstream gt(path + "/groundtruth_rect.txt");
         string tmp;
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
     }
     else if (databaseType == "TLP")
     {
-        path = "/media/elab/sdd/data/TLP/Drone1";//Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
+        path = "/home/yxqiu/data/TLP/Drone1";//Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
         // Read the groundtruth bbox
         groundtruth = new ifstream(path + "/groundtruth_rect.txt");
         getline(*groundtruth, s, ',');
@@ -159,9 +159,9 @@ int main(int argc, char **argv)
     else if (databaseType == "UAV123")
     {
         string folderUAV = "bike1"; //"person23";//"building1";//"wakeboard2"; //"person3";//
-        path = "/media/elab/sdd/data/UAV123/data_seq/UAV123/" + folderUAV;
+        path = "/home/yxqiu/data/UAV123/data_seq/UAV123/" + folderUAV;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
+        groundtruth = new ifstream("/home/yxqiu/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x = atof(s.c_str());
@@ -278,17 +278,17 @@ int main(int argc, char **argv)
         putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
                 0.75, Scalar(0, 225, 0), 2);
 
-        imshow("OpenTracker", frameDraw);
+        // imshow("OpenTracker", frameDraw);
         
-        int c = cvWaitKey(1);
-        if (c != -1)
-            c = c % 256;
-        if (c == 27)
-        {
-            cvDestroyWindow("OpenTracker");
-            return 0;
-        }
-        waitKey(1);
+        // int c = cvWaitKey(1);
+        // if (c != -1)
+        //     c = c % 256;
+        // if (c == 27)
+        // {
+        //     cvDestroyWindow("OpenTracker");
+        //     return 0;
+        // }
+        // waitKey(1);
         // Read next image======================================================
         f++;
         osfile.str("");

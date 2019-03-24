@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 {
     // Database settings
     string databaseTypes[5] = {"Demo","VOT-2017", "TB-2015", "TLP", "UAV123"};
-    string databaseType = databaseTypes[0];//4];
+    string databaseType = databaseTypes[1];//4];
     // Read from the images ====================================================
     std::vector<float> CenterError;
     std::vector<float> Iou;
@@ -77,9 +77,9 @@ int main(int argc, char **argv)
     else if (databaseType == "VOT-2017")
     {
         string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
-        path = "/media/elab/sdd/data/VOT/vot2017/" + folderVOT;
+        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+        groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x1 = atof(s.c_str());
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     }
     else if (databaseType == "TB-2015")
     {
-        path = "/media/elab/sdd/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
+        path = "/home/yxqiu/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
         // some of the dataset has '\t' as the delimiter, so first change it to ','.
         fstream gt(path + "/groundtruth_rect.txt");
         string tmp;
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
     }
     else if (databaseType == "TLP")
     {
-        path = "/media/elab/sdd/data/TLP/Drone1";//Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
+        path = "/home/yxqiu/data/TLP/Drone1";//Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
         // Read the groundtruth bbox
         groundtruth = new ifstream(path + "/groundtruth_rect.txt");
         getline(*groundtruth, s, ',');
@@ -170,9 +170,9 @@ int main(int argc, char **argv)
     else if (databaseType == "UAV123")
     {
         string folderUAV = "bike1"; //"person23";//"building1";//"wakeboard2"; //"person3";//
-        path = "/media/elab/sdd/data/UAV123/data_seq/UAV123/" + folderUAV;
+        path = "/home/yxqiu/data/UAV123/data_seq/UAV123/" + folderUAV;
         // Read the groundtruth bbox
-        groundtruth = new ifstream("/media/elab/sdd/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
+        groundtruth = new ifstream("/home/yxqiu/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
         f = 1;
         getline(*groundtruth, s, ',');
         x = atof(s.c_str());
