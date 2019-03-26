@@ -227,7 +227,7 @@ int main(int argc, char **argv)
     //waitKey(0);
 
     double timereco = (double)getTickCount();
-    ECO ecotracker;
+    ECO* ecotracker = new ECO();
     Rect2f ecobbox(x, y, w, h);
     eco::EcoParameters parameters;
 
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
     parameters.init_CG_iter = 50;
     parameters.interpolation_centering = false;
     */
-    ecotracker.init(frame, ecobbox, parameters);
+    ecotracker->init(frame, ecobbox, parameters);
     float fpsecoini = getTickFrequency() / ((double)getTickCount() - timereco);
     // 0: burn_in
     // 1: track
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
     {
         // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
         timereco = (double)getTickCount();
-        bool okeco = ecotracker.update(frame, ecobbox);
+        bool okeco = ecotracker->update(frame, ecobbox);
         float fpseco = getTickFrequency() / ((double)getTickCount() - timereco);
         // if (okeco)
         // {
@@ -475,7 +475,17 @@ int main(int argc, char **argv)
             cout << "reset:" << reset_count_down << std::endl;
             if (reset_count_down == 0) {
                 reset_count_down = 5;
-                // ecotracker.init(frame, bboxGroundtruth, parameters);
+#ifdef USE_MULTI_THREAD
+                void *status;
+                if (pthread_join(ecotracker->thread_train_, &status))
+                {
+                    cout << "Error:unable to join!" << std::endl;
+                    exit(-1);
+                }
+#endif
+                delete ecotracker;
+                ecotracker = new ECO();
+                ecotracker->init(frame, bboxGroundtruth, parameters);
                 state = 0;
             } else {
                 reset_count_down = reset_count_down - 1;
@@ -517,7 +527,7 @@ int main(int argc, char **argv)
     }
 #ifdef USE_MULTI_THREAD
     void *status;
-    if (pthread_join(ecotracker.thread_train_, &status))
+    if (pthread_join(ecotracker->thread_train_, &status))
     {
          cout << "Error:unable to join!"  << std::endl;
          exit(-1);
@@ -535,6 +545,7 @@ int main(int argc, char **argv)
          << " IniFps:" << fpsecoini
          << " AvgFps:" << AvgFps << std::endl;
 
+    delete ecotracker;
     delete groundtruth;
     return 0;
 }
