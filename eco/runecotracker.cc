@@ -86,7 +86,7 @@ int main(int argc, char **argv)
         else if (databaseType == "VOT-2017")
         {
             // string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
-            if (!std::getline(sequenceFile, folderVOT))
+            if (!std::getline(sequenceFile, folderVOT) || folderVOT == "")
             {
                 break;
             }
