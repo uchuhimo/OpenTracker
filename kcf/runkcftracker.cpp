@@ -117,7 +117,7 @@ int main(int argc, char **argv)
             w = std::max({x1, x2, x3, x4}) - x;
             h = std::max({y1, y2, y3, y4}) - y;
             cout << x << " " << y << " " << w << " " << h << endl;
-            assert(x >= 0 && y >= 0 && w > 0 && h > 0);
+            // assert(x >= 0 && y >= 0 && w > 0 && h > 0);
             // Read images in a folder
             osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
             cout << osfile.str() << endl;
@@ -400,7 +400,7 @@ int main(int argc, char **argv)
                 w = std::max({x1, x2, x3, x4}) - x;
                 h = std::max({y1, y2, y3, y4}) - y;
                 cout << x << " " << y << " " << w << " " << h << endl;
-                assert(x >= 0 && y >= 0 && w > 0 && h > 0);
+                // assert(x >= 0 && y >= 0 && w > 0 && h > 0);
                 // Read images in a folder
                 osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
                 cout << osfile.str() << endl;
