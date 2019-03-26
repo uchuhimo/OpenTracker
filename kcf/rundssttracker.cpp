@@ -237,10 +237,9 @@ int main(int argc, char **argv)
         //imshow("OpenTracker", frameDraw);
         //waitKey(0);
         // Create KCFTracker:
-        bool HOG = true, FIXEDWINDOW = true, MULTISCALE = true, LAB = true; //LAB color space features
+        bool HOG = true, FIXEDWINDOW = true, MULTISCALE = true, LAB = true, DSST = true; //LAB color space features
 
         // Create DSSTTracker:
-        DSST = true;
         KCFTracker dssttracker(HOG, FIXEDWINDOW, MULTISCALE, LAB, DSST);
         Rect2d dsstbbox((int)bboxGroundtruth.x, (int)bboxGroundtruth.y, (int)bboxGroundtruth.width, (int)bboxGroundtruth.height);
         dssttracker.init(frame, dsstbbox);
