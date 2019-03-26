@@ -17,8 +17,8 @@ using namespace eco;
 int main(int argc, char **argv)
 {
     // Database settings
-    string databaseTypes[5] = {"Demo","VOT-2017", "TB-2015", "TLP", "UAV123"};
-    string databaseType = databaseTypes[1];//4];
+    string databaseTypes[5] = {"Demo", "VOT-2017", "TB-2015", "TLP", "UAV123"};
+    string databaseType = databaseTypes[1]; //4];
     // Read from the images ====================================================
     std::vector<float> CenterError;
     std::vector<float> Iou;
@@ -41,7 +41,8 @@ int main(int argc, char **argv)
     int32_t valid_frame_count = 0;
     int32_t frame_count = 0;
 
-    while(true) {
+    while (true)
+    {
         osfile.str("");
         if (databaseType == "Demo")
         {
@@ -93,7 +94,10 @@ int main(int argc, char **argv)
             // Read the groundtruth bbox
             groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
             f = 1;
-            getline(*groundtruth, s, ',');
+            if (!getline(*groundtruth, s, ','))
+            {
+                break;
+            }
             x1 = atof(s.c_str());
             getline(*groundtruth, s, ',');
             y1 = atof(s.c_str());
@@ -441,7 +445,10 @@ int main(int argc, char **argv)
             else if (databaseType == "VOT-2017")
             {
                 // Read the groundtruth bbox
-                getline(*groundtruth, s, ',');
+                if (!getline(*groundtruth, s, ','))
+                {
+                    break;
+                }
                 x1 = atof(s.c_str());
                 getline(*groundtruth, s, ',');
                 y1 = atof(s.c_str());
@@ -559,7 +566,7 @@ int main(int argc, char **argv)
         delete ecotracker;
         delete groundtruth;
     }
-    
+
     AvgPrecision /= (float)(valid_frame_count);
     SuccessRate /= (float)(valid_frame_count);
     AvgIou = std::accumulate(Iou.begin(), Iou.end(), 0.0f) / Iou.size();
@@ -569,7 +576,7 @@ int main(int argc, char **argv)
          << " AvgPrecision:" << AvgPrecision
          << " AvgIou:" << AvgIou
          << " SuccessRate:" << SuccessRate
-        //  << " IniFps:" << fpsecoini
+         //  << " IniFps:" << fpsecoini
          << " AvgFps:" << AvgFps << std::endl;
 
     return 0;
