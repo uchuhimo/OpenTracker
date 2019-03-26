@@ -10,7 +10,7 @@ USE_FFTW=0
 USE_GTEST=0
 USE_VOT_TRAX=0
 
-CAFFE_PATH=/media/elab/sdd/mycodes/caffe
+CAFFE_PATH=/opt/caffe
 CC=gcc
 CXX=g++
 NVCC=nvcc

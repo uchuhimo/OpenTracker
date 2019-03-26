@@ -296,19 +296,19 @@ int main(int argc, char **argv)
 
     while (frame.data)
     {
-        frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
+        // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
         timereco = (double)getTickCount();
         bool okeco = ecotracker.update(frame, ecobbox);
         float fpseco = getTickFrequency() / ((double)getTickCount() - timereco);
-        if (okeco)
-        {
-            rectangle(frameDraw, ecobbox, Scalar(255, 0, 255), 2, 1); //blue
-        }
-        else
-        {
-            putText(frameDraw, "ECO tracking failure detected", cv::Point(100, 80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(255, 0, 255), 2);
-            //waitKey(0);
-        }
+        // if (okeco)
+        // {
+        //     rectangle(frameDraw, ecobbox, Scalar(255, 0, 255), 2, 1); //blue
+        // }
+        // else
+        // {
+        //     putText(frameDraw, "ECO tracking failure detected", cv::Point(100, 80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(255, 0, 255), 2);
+        //     //waitKey(0);
+        // }
 /*
         // Draw ground truth box
         if (databaseType == "Demo")
@@ -461,6 +461,7 @@ int main(int argc, char **argv)
 
         if (state == 0) {
             // burn_in
+            cout << "burn in:" << burn_in_count_down << std::endl;
             if (burn_in_count_down == 0) {
                 burn_in_count_down = 10;
                 state = 1;
@@ -471,6 +472,7 @@ int main(int argc, char **argv)
         }
         if (state == 2) {
             // reset
+            cout << "reset:" << reset_count_down << std::endl;
             if (reset_count_down == 0) {
                 reset_count_down = 5;
                 ecotracker.init(frame, bboxGroundtruth, parameters);
@@ -486,6 +488,7 @@ int main(int argc, char **argv)
         float iou = metrics.iou(ecobbox, bboxGroundtruth);
         
         if (iou <= 0) {
+            cout << "fail:" << iou << std::endl;
             state = 2;
             continue;
         }
