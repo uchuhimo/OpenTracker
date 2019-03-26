@@ -8,6 +8,7 @@
 #include "parameters.hpp"
 #include "metrics.hpp"
 #include "debug.hpp"
+#include <assert.h>
 
 using namespace std;
 using namespace cv;
@@ -108,11 +109,12 @@ int main(int argc, char **argv)
             x4 = atof(s.c_str());
             getline(*groundtruth, s);
             y4 = atof(s.c_str());
-            x = std::min(x1, x4);
-            y = std::min(y1, y2);
-            w = std::max(x2, x3) - x;
-            h = std::max(y3, y4) - y;
+            x = std::min(x1, x2);
+            y = std::min(y1, y4);
+            w = std::max(x1, x2) - x;
+            h = std::max(y1, y4) - y;
             cout << x << " " << y << " " << w << " " << h << endl;
+            assert(x >= 0 && y >= 0 && w > 0 && h > 0);
             // Read images in a folder
             osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
             cout << osfile.str() << endl;
@@ -455,14 +457,15 @@ int main(int argc, char **argv)
                 x4 = atof(s.c_str());
                 getline(*groundtruth, s);
                 y4 = atof(s.c_str());
-                x = std::min(x1, x4);
-                y = std::min(y1, y2);
-                w = std::max(x2, x3) - x;
-                h = std::max(y3, y4) - y;
-                //cout << x << " " << y << " " << w << " " << h << endl;
+                x = std::min(x1, x2);
+                y = std::min(y1, y4);
+                w = std::max(x1, x2) - x;
+                h = std::max(y1, y4) - y;
+                cout << x << " " << y << " " << w << " " << h << endl;
+                assert(x >= 0 && y >= 0 && w > 0 && h > 0);
                 // Read images in a folder
                 osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
-                //cout << osfile.str() << endl;
+                cout << osfile.str() << endl;
             }
             frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
             bboxGroundtruth.x = x;

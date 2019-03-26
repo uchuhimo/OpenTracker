@@ -1,4 +1,4 @@
-USE_VOT_TRAX=1
+USE_VOT_TRAX=0
 
 CC=gcc
 CXX=g++
