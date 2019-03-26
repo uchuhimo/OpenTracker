@@ -14,7 +14,7 @@ CXXFLAGS+= -ltrax
 LDFLAGS+= -ltrax 
 endif
 
-ALL = runkcftracker.bin $(TARGET_LIB)
+ALL = runkcftracker.bin rundssttracker.bin $(TARGET_LIB)
 ifeq ($(USE_VOT_TRAX), 1)
 	ALL+= vot_kcf.bin 
 endif
@@ -22,6 +22,9 @@ endif
 all: $(ALL)
 
 runkcftracker.bin: $(OBJS) runkcftracker.o
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+rundssttracker.bin: $(OBJS) rundssttracker.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 ifeq ($(USE_VOT_TRAX), 1)

@@ -1,24 +1,23 @@
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
 #include <opencv2/opencv.hpp>
-
-#include "eco.hpp"
-#include "parameters.hpp"
-#include "metrics.hpp"
-#include "debug.hpp"
 #include <assert.h>
+
+#include "kcftracker.hpp"
+#include "metrics.hpp"
 
 using namespace std;
 using namespace cv;
-using namespace eco;
+using namespace kcf;
 
 int main(int argc, char **argv)
 {
     // Database settings
     string databaseTypes[5] = {"Demo", "VOT-2017", "TB-2015", "TLP", "UAV123"};
-    string databaseType = databaseTypes[1]; //4];
+    string databaseType = databaseTypes[1];
     // Read from the images ====================================================
     std::vector<float> CenterError;
     std::vector<float> Iou;
@@ -33,7 +32,6 @@ int main(int argc, char **argv)
     float x, y, w, h;
     float x1, y1, x2, y2, x3, y3, x4, y4; //gt for vot
     std::string s;
-    std::string folderVOT;
     std::string path;
     ifstream *groundtruth;
     ostringstream osfile;
@@ -47,7 +45,7 @@ int main(int argc, char **argv)
         if (databaseType == "Demo")
         {
             path = "../sequences/Crossing";
-            // some of the dataset has '\t' as the delimiter, change it to ','.
+            // some of the dataset has '\t' as the delimiter, so first change it to ','.
             fstream gt(path + "/groundtruth_rect.txt");
             string tmp;
             size_t index = 1;
@@ -85,7 +83,7 @@ int main(int argc, char **argv)
         }
         else if (databaseType == "VOT-2017")
         {
-            // string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
+            // string folderVOT = "girl"; //"iceskater1";//"road";//"drone1";//"iceskater1";//"girl"; //"road";//"bag";////"helicopter";
             if (!std::getline(sequenceFile, folderVOT))
             {
                 break;
@@ -216,11 +214,7 @@ int main(int argc, char **argv)
             return -1;
         }
         // Draw gt;
-        if (databaseType == "Demo")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "TLP")
+        if (databaseType == "TLP")
         {
             rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
         }
@@ -242,67 +236,15 @@ int main(int argc, char **argv)
 
         //imshow("OpenTracker", frameDraw);
         //waitKey(0);
+        // Create KCFTracker:
+        bool HOG = true, FIXEDWINDOW = true, MULTISCALE = true, LAB = true; //LAB color space features
 
-        double timereco = (double)getTickCount();
-        ECO ecotracker;
-        Rect2f ecobbox(x, y, w, h);
-        eco::EcoParameters parameters;
+        // Create DSSTTracker:
+        DSST = true;
+        KCFTracker dssttracker(HOG, FIXEDWINDOW, MULTISCALE, LAB, DSST);
+        Rect2d dsstbbox((int)bboxGroundtruth.x, (int)bboxGroundtruth.y, (int)bboxGroundtruth.width, (int)bboxGroundtruth.height);
+        dssttracker.init(frame, dsstbbox);
 
-        parameters.useCnFeature = true;
-        parameters.cn_features.fparams.tablename = "/workspace/OpenTracker/eco/look_tables/CNnorm.txt";
-        /* VOT2016_HC_settings 
-    parameters.useDeepFeature = false;
-    parameters.useHogFeature = true;
-    parameters.useColorspaceFeature = false;
-    parameters.useCnFeature = true;
-    parameters.useIcFeature = true;
-    parameters.learning_rate = 0.01;
-    parameters.projection_reg = 5e-7;
-    parameters.init_CG_iter = 10 * 20;
-    parameters.CG_forgetting_rate = 60;
-    parameters.precond_reg_param = 0.2;
-    parameters.reg_window_edge = 4e-3;
-    parameters.use_scale_filter = false;
-    */
-        /* VOT2016_DEEP_settings
-    parameters.useDeepFeature = true;
-    parameters.useHogFeature = true;
-    parameters.useColorspaceFeature = false;
-    parameters.useCnFeature = true;
-    parameters.useIcFeature = true;
-    parameters.hog_features.fparams.cell_size = 4;
-    parameters.output_sigma_factor = 1.0f / 12.0f;
-    parameters.learning_rate = 0.012;
-    parameters.nSamples = 50;
-    parameters.skip_after_frame = 1;
-    parameters.projection_reg = 2e-7;
-    parameters.init_CG_iter = 10 * 20;
-    parameters.CG_forgetting_rate = 75;
-    parameters.precond_data_param = 0.7;
-    parameters.precond_reg_param = 0.1;
-    parameters.precond_proj_param = 30;
-    parameters.reg_sparsity_threshold = 0.12;
-    parameters.reg_window_edge = 4e-3;
-    */
-        /* SRDCF_settings - not implemented yet
-    parameters.useDeepFeature = false;
-    parameters.useHogFeature = true;
-    parameters.useColorspaceFeature = false;
-    parameters.useCnFeature = true;
-    parameters.useIcFeature = true;
-    parameters.hog_features.fparams.cell_size = 4;
-    parameters.learning_rate = 0.010;
-    parameters.nSamples = 300;
-    parameters.train_gap = 0;
-    parameters.skip_after_frame = 0;
-    parameters.use_detection_sample = false;
-    parameters.use_projection_matrix = false;
-    parameters.use_sample_merge = false;
-    parameters.init_CG_iter = 50;
-    parameters.interpolation_centering = false;
-    */
-        ecotracker.init(frame, ecobbox, parameters);
-        float fpsecoini = getTickFrequency() / ((double)getTickCount() - timereco);
         // 0: burn_in
         // 1: track
         // 2: reset
@@ -313,54 +255,47 @@ int main(int argc, char **argv)
         while (frame.data)
         {
             // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
-            timereco = (double)getTickCount();
-            bool okeco = ecotracker.update(frame, ecobbox);
-            float fpseco = getTickFrequency() / ((double)getTickCount() - timereco);
-            // if (okeco)
+            //DSST========================
+            double timerdsst = (double)getTickCount();
+            bool okdsst = dssttracker.update(frame, dsstbbox);
+            float fpsdsst = getTickFrequency() / ((double)getTickCount() - timerdsst);
+            // if (okdsst)
             // {
-            //     rectangle(frameDraw, ecobbox, Scalar(255, 0, 255), 2, 1); //blue
+            //     rectangle(frameDraw, dsstbbox, Scalar(0, 0, 255), 2, 1);
             // }
             // else
             // {
-            //     putText(frameDraw, "ECO tracking failure detected", cv::Point(100, 80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(255, 0, 255), 2);
-            //     //waitKey(0);
+            //     putText(frameDraw, "DSST tracking failure detected", cv::Point(10, 100), FONT_HERSHEY_SIMPLEX,
+            //             0.75, Scalar(0, 0, 255), 2);
             // }
-            /*
-        // Draw ground truth box
-        if (databaseType == "Demo")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "TLP")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "TB-2015")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "UAV123")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "VOT-2017")
-        {
-            line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
-        }
-*/
+            // Draw ground truth box
+            // if (databaseType == "TLP")
+            // {
+            //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+            // }
+            // else if (databaseType == "TB-2015")
+            // {
+            //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+            // }
+            // else if (databaseType == "UAV123")
+            // {
+            //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+            // }
+            // else if (databaseType == "VOT-2017")
+            // {
+            //     line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
+            //     line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
+            //     line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
+            //     line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
+            // }
+
             // // Display FPS on frameDraw
             // ostringstream os;
-            // os << float(fpseco);
+            // os << float(fpskcf);
             // putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
-            //         0.75, Scalar(255, 0, 255), 2);
+            //         0.75, Scalar(0, 225, 0), 2);
 
-            // if (parameters.debug == 0)
-            // {
-            //     imshow("OpenTracker", frameDraw);
-            // }
+            // imshow("OpenTracker", frameDraw);
 
             // int c = cvWaitKey(1);
             // if (c != -1)
@@ -368,14 +303,12 @@ int main(int argc, char **argv)
             // if (c == 27)
             // {
             //     cvDestroyWindow("OpenTracker");
-            //     exit(1);
+            //     return 0;
             // }
             // waitKey(1);
-
             // Read next image======================================================
-            cout << "Frame:" << f << " FPS:" << fpseco << endl;
+            cout << "Frame:" << f << " FPS:" << fpsdsst << endl;
             f++;
-            frame_count++;
             osfile.str("");
             if (databaseType == "Demo")
             {
@@ -474,11 +407,12 @@ int main(int argc, char **argv)
                 osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
                 cout << osfile.str() << endl;
             }
-            frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
+
             bboxGroundtruth.x = x;
             bboxGroundtruth.y = y;
             bboxGroundtruth.width = w;
             bboxGroundtruth.height = h;
+            frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
 
             if (state == 0)
             {
@@ -502,7 +436,7 @@ int main(int argc, char **argv)
                 if (reset_count_down == 0)
                 {
                     reset_count_down = 5;
-                    ecotracker.init(frame, bboxGroundtruth, parameters);
+                    .init(frame, bboxGroundtruth, parameters);
                     state = 0;
                 }
                 else
@@ -513,8 +447,8 @@ int main(int argc, char **argv)
             }
 
             // Calculate the metrics;
-            float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
-            float iou = metrics.iou(ecobbox, bboxGroundtruth);
+            float centererror = metrics.center_error(dsstbbox, bboxGroundtruth);
+            float iou = metrics.iou(dsstbbox, bboxGroundtruth);
 
             if (iou <= 0)
             {
@@ -525,7 +459,7 @@ int main(int argc, char **argv)
 
             CenterError.push_back(centererror);
             Iou.push_back(iou);
-            FpsEco.push_back(fpseco);
+            FpsEco.push_back(fpsdsst);
             valid_frame_count++;
 
             cout << "iou:" << iou << std::endl;
@@ -541,19 +475,10 @@ int main(int argc, char **argv)
             /*
         if(f%10==0)
         {
-            ecotracker.init(frame, bboxGroundtruth, parameters);
+            ecotracker.reset(frame, bboxGroundtruth);
         }
 */
         }
-#ifdef USE_MULTI_THREAD
-        void *status;
-        if (pthread_join(ecotracker.thread_train_, &status))
-        {
-            cout << "Error:unable to join!" << std::endl;
-            exit(-1);
-        }
-#endif
-        delete groundtruth;
     }
 
     AvgPrecision /= (float)(valid_frame_count);
