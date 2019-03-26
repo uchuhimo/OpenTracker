@@ -207,33 +207,33 @@ int main(int argc, char **argv)
         Rect2f bboxGroundtruth(x, y, w, h);
 
         cv::Mat frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
-        cv::Mat frameDraw;
-        frame.copyTo(frameDraw);
-        if (!frame.data)
-        {
-            cout << "Could not open or find the image" << std::endl;
-            return -1;
-        }
-        // Draw gt;
-        if (databaseType == "TLP")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "TB-2015")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "UAV123")
-        {
-            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-        }
-        else if (databaseType == "VOT-2017")
-        {
-            line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
-            line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
-        }
+        // cv::Mat frameDraw;
+        // frame.copyTo(frameDraw);
+        // if (!frame.data)
+        // {
+        //     cout << "Could not open or find the image" << std::endl;
+        //     return -1;
+        // }
+        // // Draw gt;
+        // if (databaseType == "TLP")
+        // {
+        //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        // }
+        // else if (databaseType == "TB-2015")
+        // {
+        //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        // }
+        // else if (databaseType == "UAV123")
+        // {
+        //     rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        // }
+        // else if (databaseType == "VOT-2017")
+        // {
+        //     line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
+        //     line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
+        //     line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
+        //     line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
+        // }
 
         //imshow("OpenTracker", frameDraw);
         //waitKey(0);
