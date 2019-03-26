@@ -286,6 +286,13 @@ int main(int argc, char **argv)
     */
     ecotracker.init(frame, ecobbox, parameters);
     float fpsecoini = getTickFrequency() / ((double)getTickCount() - timereco);
+    // 0: burn_in
+    // 1: track
+    // 2: reset
+    int32_t state = 0;
+    int32_t burn_in_count_down = 10;
+    int32_t reset_count_down = 5;
+    int32_t valid_frame_count = 0;
 
     while (frame.data)
     {
@@ -446,22 +453,47 @@ int main(int argc, char **argv)
             osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
             //cout << osfile.str() << endl;
         }
-
+        frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
         bboxGroundtruth.x = x;
         bboxGroundtruth.y = y;
         bboxGroundtruth.width = w;
         bboxGroundtruth.height = h;
-        frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
-        if(!frame.data)
-        {
-            break;
+
+        if (state == 0) {
+            // burn_in
+            if (burn_in_count_down == 0) {
+                burn_in_count_down = 10;
+                state = 1;
+            } else {
+                burn_in_count_down = burn_in_count_down - 1;
+            }
+            continue;
         }
+        if (state == 2) {
+            // reset
+            if (reset_count_down == 0) {
+                reset_count_down = 5;
+                ecotracker.init(frame, bboxGroundtruth, parameters);
+                state = 0;
+            } else {
+                reset_count_down = reset_count_down - 1;
+            }
+            continue;
+        }
+
         // Calculate the metrics;
         float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
         float iou = metrics.iou(ecobbox, bboxGroundtruth);
+        
+        if (iou <= 0) {
+            state = 2;
+            continue;
+        }
+
         CenterError.push_back(centererror);
         Iou.push_back(iou);
         FpsEco.push_back(fpseco);
+        valid_frame_count++;
 
         cout << "iou:" << iou << std::endl;
 
@@ -488,13 +520,14 @@ int main(int argc, char **argv)
          exit(-1);
     }
 #endif
-    AvgPrecision /= (float)(f - 2);
-    SuccessRate /= (float)(f - 2);
+    AvgPrecision /= (float)(valid_frame_count);
+    SuccessRate /= (float)(valid_frame_count);
     AvgIou = std::accumulate(Iou.begin(), Iou.end(), 0.0f) / Iou.size();
     AvgFps = std::accumulate(FpsEco.begin(), FpsEco.end(), 0.0f) / FpsEco.size();
     cout << "Frames:" << f - 2
+         << " ValidFrames:" << valid_frame_count
          << " AvgPrecision:" << AvgPrecision
-         << " AvgIou:" << AvgIou 
+         << " AvgIou:" << AvgIou
          << " SuccessRate:" << SuccessRate
          << " IniFps:" << fpsecoini
          << " AvgFps:" << AvgFps << std::endl;
