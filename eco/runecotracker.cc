@@ -41,6 +41,7 @@ int main(int argc, char **argv)
     int32_t frame_count = 0;
 
     while(true) {
+        osfile.str("");
         if (databaseType == "Demo")
         {
             path = "../sequences/Crossing";
