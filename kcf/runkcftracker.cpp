@@ -434,7 +434,7 @@ int main(int argc, char **argv)
                 if (reset_count_down == 0)
                 {
                     reset_count_down = 5;
-                    kcftracker.init(frame, bboxGroundtruth, parameters);
+                    kcftracker.init(frame, bboxGroundtruth);
                     state = 0;
                 }
                 else

@@ -32,6 +32,7 @@ int main(int argc, char **argv)
     float x, y, w, h;
     float x1, y1, x2, y2, x3, y3, x4, y4; //gt for vot
     std::string s;
+    std::string folderVOT;
     std::string path;
     ifstream *groundtruth;
     ostringstream osfile;
@@ -435,7 +436,7 @@ int main(int argc, char **argv)
                 if (reset_count_down == 0)
                 {
                     reset_count_down = 5;
-                    .init(frame, bboxGroundtruth, parameters);
+                    dssttracker.init(frame, bboxGroundtruth);
                     state = 0;
                 }
                 else
