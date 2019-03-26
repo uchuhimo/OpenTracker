@@ -37,206 +37,213 @@ int main(int argc, char **argv)
     ifstream *groundtruth;
     ostringstream osfile;
     ifstream sequenceFile("list.txt");
-    if (databaseType == "Demo")
-    {
-        path = "../sequences/Crossing";
-        // some of the dataset has '\t' as the delimiter, change it to ','.
-        fstream gt(path + "/groundtruth_rect.txt");
-        string tmp;
-        size_t index = 1;
-        while (gt >> tmp)
+    int32_t valid_frame_count = 0;
+    int32_t frame_count = 0;
+
+    while(true){
+        if (databaseType == "Demo")
         {
-            if(tmp.find(',')<10)
+            path = "../sequences/Crossing";
+            // some of the dataset has '\t' as the delimiter, change it to ','.
+            fstream gt(path + "/groundtruth_rect.txt");
+            string tmp;
+            size_t index = 1;
+            while (gt >> tmp)
+            {
+                if (tmp.find(',') < 10)
+                {
+                    break;
+                }
+                if (index % 4 == 0)
+                {
+                }
+                else
+                {
+                    gt << ",";
+                }
+                index++;
+            }
+            gt.close();
+            // Read the groundtruth bbox
+            groundtruth = new ifstream(path + "/groundtruth_rect.txt");
+            f = 1;
+            getline(*groundtruth, s, ',');
+            x = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            w = atof(s.c_str());
+            getline(*groundtruth, s);
+            h = atof(s.c_str());
+            cout << f << " " << x << " " << y << " " << w << " " << h << " " << endl;
+            // Read images in a folder
+            osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
+            cout << osfile.str() << endl;
+        }
+        else if (databaseType == "VOT-2017")
+        {
+            // string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
+            if (!std::getline(sequenceFile, folderVOT))
             {
                 break;
             }
-            if (index%4 == 0)
-            {
-            }
-            else
-            {
-                gt << ",";
-            }
-            index++;
+            path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
+            // Read the groundtruth bbox
+            groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+            f = 1;
+            getline(*groundtruth, s, ',');
+            x1 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y1 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x2 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y2 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x3 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y3 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x4 = atof(s.c_str());
+            getline(*groundtruth, s);
+            y4 = atof(s.c_str());
+            x = std::min(x1, x4);
+            y = std::min(y1, y2);
+            w = std::max(x2, x3) - x;
+            h = std::max(y3, y4) - y;
+            cout << x << " " << y << " " << w << " " << h << endl;
+            // Read images in a folder
+            osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
+            cout << osfile.str() << endl;
         }
-        gt.close();
-        // Read the groundtruth bbox
-        groundtruth = new ifstream(path + "/groundtruth_rect.txt");
-        f = 1;
-        getline(*groundtruth, s, ',');
-        x = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        w = atof(s.c_str());
-        getline(*groundtruth, s);
-        h = atof(s.c_str());
-        cout << f << " " << x << " " << y << " " << w << " " << h << " " << endl;
-        // Read images in a folder
-        osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
-        cout << osfile.str() << endl;
-    }
-    else if (databaseType == "VOT-2017")
-    {
-        // string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
-        std::getline(sequenceFile, folderVOT);
-        path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
-        // Read the groundtruth bbox
-        groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
-        f = 1;
-        getline(*groundtruth, s, ',');
-        x1 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y1 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        x2 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y2 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        x3 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y3 = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        x4 = atof(s.c_str());
-        getline(*groundtruth, s);
-        y4 = atof(s.c_str());
-        x = std::min(x1, x4);
-        y = std::min(y1, y2);
-        w = std::max(x2, x3) - x;
-        h = std::max(y3, y4) - y;
-        cout << x << " " << y << " " << w << " " << h << endl;
-        // Read images in a folder
-        osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
-        cout << osfile.str() << endl;
-    }
-    else if (databaseType == "TB-2015")
-    {
-        path = "/home/yxqiu/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
-        // some of the dataset has '\t' as the delimiter, so first change it to ','.
-        fstream gt(path + "/groundtruth_rect.txt");
-        string tmp;
-        size_t index = 1;
-        while (gt >> tmp)
+        else if (databaseType == "TB-2015")
         {
-            if(tmp.find(',')<10)
+            path = "/home/yxqiu/data/TB-2015/Crossing"; //Coke"; ///Bird1";//BlurFace";
+            // some of the dataset has '\t' as the delimiter, so first change it to ','.
+            fstream gt(path + "/groundtruth_rect.txt");
+            string tmp;
+            size_t index = 1;
+            while (gt >> tmp)
             {
-                break;
+                if (tmp.find(',') < 10)
+                {
+                    break;
+                }
+                if (index % 4 == 0)
+                {
+                }
+                else
+                {
+                    gt << ",";
+                }
+                index++;
             }
-            if (index%4 == 0)
-            {
-            }
-            else
-            {
-                gt << ",";
-            }
-            index++;
+            gt.close();
+            // Read the groundtruth bbox
+            groundtruth = new ifstream(path + "/groundtruth_rect.txt");
+            f = 1;
+            getline(*groundtruth, s, ',');
+            x = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            w = atof(s.c_str());
+            getline(*groundtruth, s);
+            h = atof(s.c_str());
+            cout << f << " " << x << " " << y << " " << w << " " << h << " " << endl;
+            // Read images in a folder
+            osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
+            cout << osfile.str() << endl;
         }
-        gt.close();
-        // Read the groundtruth bbox
-        groundtruth = new ifstream(path + "/groundtruth_rect.txt");
-        f = 1;
-        getline(*groundtruth, s, ',');
-        x = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        w = atof(s.c_str());
-        getline(*groundtruth, s);
-        h = atof(s.c_str());
-        cout << f << " " << x << " " << y << " " << w << " " << h << " " << endl;
-        // Read images in a folder
-        osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
-        cout << osfile.str() << endl;
-    }
-    else if (databaseType == "TLP")
-    {
-        path = "/home/yxqiu/data/TLP/Drone1";//Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
-        // Read the groundtruth bbox
-        groundtruth = new ifstream(path + "/groundtruth_rect.txt");
-        getline(*groundtruth, s, ',');
-        f = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        x = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        w = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        h = atof(s.c_str());
-        getline(*groundtruth, s);
-        isLost = atof(s.c_str());
-        cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
-        // Read images in a folder
-        osfile << path << "/img/" << setw(5) << setfill('0') << f << ".jpg";
-        cout << osfile.str() << endl;
-    }
-    else if (databaseType == "UAV123")
-    {
-        string folderUAV = "bike1"; //"person23";//"building1";//"wakeboard2"; //"person3";//
-        path = "/home/yxqiu/data/UAV123/data_seq/UAV123/" + folderUAV;
-        // Read the groundtruth bbox
-        groundtruth = new ifstream("/home/yxqiu/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
-        f = 1;
-        getline(*groundtruth, s, ',');
-        x = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        y = atof(s.c_str());
-        getline(*groundtruth, s, ',');
-        w = atof(s.c_str());
-        getline(*groundtruth, s);
-        h = atof(s.c_str());
-        cout << x << " " << y << " " << w << " " << h << endl;
-        // Read images in a folder
-        osfile << path << "/" << setw(6) << setfill('0') << f << ".jpg";
-        cout << osfile.str() << endl;
-    }
+        else if (databaseType == "TLP")
+        {
+            path = "/home/yxqiu/data/TLP/Drone1"; //Sam";//Drone2"; //Bike";//Alladin";//IceSkating";//
+            // Read the groundtruth bbox
+            groundtruth = new ifstream(path + "/groundtruth_rect.txt");
+            getline(*groundtruth, s, ',');
+            f = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            w = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            h = atof(s.c_str());
+            getline(*groundtruth, s);
+            isLost = atof(s.c_str());
+            cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
+            // Read images in a folder
+            osfile << path << "/img/" << setw(5) << setfill('0') << f << ".jpg";
+            cout << osfile.str() << endl;
+        }
+        else if (databaseType == "UAV123")
+        {
+            string folderUAV = "bike1"; //"person23";//"building1";//"wakeboard2"; //"person3";//
+            path = "/home/yxqiu/data/UAV123/data_seq/UAV123/" + folderUAV;
+            // Read the groundtruth bbox
+            groundtruth = new ifstream("/home/yxqiu/data/UAV123/anno/UAV123/" + folderUAV + ".txt");
+            f = 1;
+            getline(*groundtruth, s, ',');
+            x = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            w = atof(s.c_str());
+            getline(*groundtruth, s);
+            h = atof(s.c_str());
+            cout << x << " " << y << " " << w << " " << h << endl;
+            // Read images in a folder
+            osfile << path << "/" << setw(6) << setfill('0') << f << ".jpg";
+            cout << osfile.str() << endl;
+        }
 
-    Rect2f bboxGroundtruth(x, y, w, h);
+        Rect2f bboxGroundtruth(x, y, w, h);
 
-    cv::Mat frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
-    cv::Mat frameDraw;
-    frame.copyTo(frameDraw);
-    if (!frame.data)
-    {
-        cout << "Could not open or find the image" << std::endl;
-        return -1;
-    }
-    // Draw gt;
-    if (databaseType == "Demo")
-    {
-        rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-    }
-    else if (databaseType == "TLP")
-    {
-        rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-    }
-    else if (databaseType == "TB-2015")
-    {
-        rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-    }
-    else if (databaseType == "UAV123")
-    {
-        rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
-    }
-    else if (databaseType == "VOT-2017")
-    {
-        line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
-        line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
-        line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
-        line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
-    }
+        cv::Mat frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
+        cv::Mat frameDraw;
+        frame.copyTo(frameDraw);
+        if (!frame.data)
+        {
+            cout << "Could not open or find the image" << std::endl;
+            return -1;
+        }
+        // Draw gt;
+        if (databaseType == "Demo")
+        {
+            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        }
+        else if (databaseType == "TLP")
+        {
+            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        }
+        else if (databaseType == "TB-2015")
+        {
+            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        }
+        else if (databaseType == "UAV123")
+        {
+            rectangle(frameDraw, bboxGroundtruth, Scalar(0, 0, 0), 2, 1);
+        }
+        else if (databaseType == "VOT-2017")
+        {
+            line(frameDraw, cv::Point(x1, y1), cv::Point(x2, y2), Scalar(0, 0, 0), 2, 1);
+            line(frameDraw, cv::Point(x2, y2), cv::Point(x3, y3), Scalar(0, 0, 0), 2, 1);
+            line(frameDraw, cv::Point(x3, y3), cv::Point(x4, y4), Scalar(0, 0, 0), 2, 1);
+            line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
+        }
 
-    //imshow("OpenTracker", frameDraw);
-    //waitKey(0);
+        //imshow("OpenTracker", frameDraw);
+        //waitKey(0);
 
-    double timereco = (double)getTickCount();
-    ECO* ecotracker = new ECO();
-    Rect2f ecobbox(x, y, w, h);
-    eco::EcoParameters parameters;
+        double timereco = (double)getTickCount();
+        ECO *ecotracker = new ECO();
+        Rect2f ecobbox(x, y, w, h);
+        eco::EcoParameters parameters;
 
-    parameters.useCnFeature = true;
-    parameters.cn_features.fparams.tablename = "/workspace/OpenTracker/eco/look_tables/CNnorm.txt";
-    /* VOT2016_HC_settings 
+        parameters.useCnFeature = true;
+        parameters.cn_features.fparams.tablename = "/workspace/OpenTracker/eco/look_tables/CNnorm.txt";
+        /* VOT2016_HC_settings 
     parameters.useDeepFeature = false;
     parameters.useHogFeature = true;
     parameters.useColorspaceFeature = false;
@@ -250,7 +257,7 @@ int main(int argc, char **argv)
     parameters.reg_window_edge = 4e-3;
     parameters.use_scale_filter = false;
     */
-    /* VOT2016_DEEP_settings
+        /* VOT2016_DEEP_settings
     parameters.useDeepFeature = true;
     parameters.useHogFeature = true;
     parameters.useColorspaceFeature = false;
@@ -270,7 +277,7 @@ int main(int argc, char **argv)
     parameters.reg_sparsity_threshold = 0.12;
     parameters.reg_window_edge = 4e-3;
     */
-    /* SRDCF_settings - not implemented yet
+        /* SRDCF_settings - not implemented yet
     parameters.useDeepFeature = false;
     parameters.useHogFeature = true;
     parameters.useColorspaceFeature = false;
@@ -287,33 +294,31 @@ int main(int argc, char **argv)
     parameters.init_CG_iter = 50;
     parameters.interpolation_centering = false;
     */
-    ecotracker->init(frame, ecobbox, parameters);
-    float fpsecoini = getTickFrequency() / ((double)getTickCount() - timereco);
-    // 0: burn_in
-    // 1: track
-    // 2: reset
-    int32_t state = 0;
-    int32_t burn_in_count_down = 10;
-    int32_t reset_count_down = 5;
-    int32_t valid_frame_count = 0;
-    int32_t frame_count = 0;
+        ecotracker->init(frame, ecobbox, parameters);
+        float fpsecoini = getTickFrequency() / ((double)getTickCount() - timereco);
+        // 0: burn_in
+        // 1: track
+        // 2: reset
+        int32_t state = 0;
+        int32_t burn_in_count_down = 10;
+        int32_t reset_count_down = 5;
 
-    while (true)
-    {
-        // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
-        timereco = (double)getTickCount();
-        bool okeco = ecotracker->update(frame, ecobbox);
-        float fpseco = getTickFrequency() / ((double)getTickCount() - timereco);
-        // if (okeco)
-        // {
-        //     rectangle(frameDraw, ecobbox, Scalar(255, 0, 255), 2, 1); //blue
-        // }
-        // else
-        // {
-        //     putText(frameDraw, "ECO tracking failure detected", cv::Point(100, 80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(255, 0, 255), 2);
-        //     //waitKey(0);
-        // }
-/*
+        while (frame.data)
+        {
+            // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
+            timereco = (double)getTickCount();
+            bool okeco = ecotracker->update(frame, ecobbox);
+            float fpseco = getTickFrequency() / ((double)getTickCount() - timereco);
+            // if (okeco)
+            // {
+            //     rectangle(frameDraw, ecobbox, Scalar(255, 0, 255), 2, 1); //blue
+            // }
+            // else
+            // {
+            //     putText(frameDraw, "ECO tracking failure detected", cv::Point(100, 80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(255, 0, 255), 2);
+            //     //waitKey(0);
+            // }
+            /*
         // Draw ground truth box
         if (databaseType == "Demo")
         {
@@ -339,242 +344,218 @@ int main(int argc, char **argv)
             line(frameDraw, cv::Point(x4, y4), cv::Point(x1, y1), Scalar(0, 0, 0), 2, 1);
         }
 */
-        // // Display FPS on frameDraw
-        // ostringstream os; 
-        // os << float(fpseco); 
-        // putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
-        //         0.75, Scalar(255, 0, 255), 2);
+            // // Display FPS on frameDraw
+            // ostringstream os;
+            // os << float(fpseco);
+            // putText(frameDraw, "FPS: " + os.str(), Point(100, 30), FONT_HERSHEY_SIMPLEX,
+            //         0.75, Scalar(255, 0, 255), 2);
 
-        // if (parameters.debug == 0)
-        // {
-        //     imshow("OpenTracker", frameDraw);
-        // }
+            // if (parameters.debug == 0)
+            // {
+            //     imshow("OpenTracker", frameDraw);
+            // }
 
-        // int c = cvWaitKey(1);
-        // if (c != -1)
-        //     c = c % 256;
-        // if (c == 27)
-        // {
-        //     cvDestroyWindow("OpenTracker");
-        //     exit(1);
-        // }
-        // waitKey(1);
+            // int c = cvWaitKey(1);
+            // if (c != -1)
+            //     c = c % 256;
+            // if (c == 27)
+            // {
+            //     cvDestroyWindow("OpenTracker");
+            //     exit(1);
+            // }
+            // waitKey(1);
 
-        // Read next image======================================================
-        cout << "Frame:" << f << " FPS:" << fpseco << endl;
-        f++;
-        frame_count++;
-        osfile.str("");
-        if (databaseType == "Demo")
-        {
-            getline(*groundtruth, s, ',');
-            x = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            w = atof(s.c_str());
-            getline(*groundtruth, s);
-            h = atof(s.c_str());
-            //cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
-            // Read images in a folder
-            osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
-        }
-        else if (databaseType == "TLP")
-        {
-            // Read the groundtruth bbox
-            getline(*groundtruth, s, ',');
-            //f = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            w = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            h = atof(s.c_str());
-            getline(*groundtruth, s);
-            isLost = atof(s.c_str());
-            //cout << "gt:" << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
-            osfile << path << "/img/" << setw(5) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
-        }
-        else if (databaseType == "TB-2015")
-        {
-            getline(*groundtruth, s, ',');
-            x = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            w = atof(s.c_str());
-            getline(*groundtruth, s);
-            h = atof(s.c_str());
-            //cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
-            // Read images in a folder
-            osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
-        }
-        else if (databaseType == "UAV123")
-        {
-            // Read the groundtruth bbox
-            getline(*groundtruth, s, ',');
-            x = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            w = atof(s.c_str());
-            getline(*groundtruth, s);
-            h = atof(s.c_str());
-            //cout << "gt:" << x << " " << y << " " << w << " " << h << endl;
-            // Read images in a folder
-            osfile << path << "/" << setw(6) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
-        }
-        else if (databaseType == "VOT-2017")
-        {
-            // Read the groundtruth bbox
-            getline(*groundtruth, s, ',');
-            x1 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y1 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x2 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y2 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x3 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y3 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x4 = atof(s.c_str());
-            getline(*groundtruth, s);
-            y4 = atof(s.c_str());
-            x = std::min(x1, x4);
-            y = std::min(y1, y2);
-            w = std::max(x2, x3) - x;
-            h = std::max(y3, y4) - y;
-            //cout << x << " " << y << " " << w << " " << h << endl;
-            // Read images in a folder
-            osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
-        }
-        frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
-        if (!frame.data) {
-            if (!std::getline(sequenceFile, folderVOT)) {
-                frame_count--;
-                break;
+            // Read next image======================================================
+            cout << "Frame:" << f << " FPS:" << fpseco << endl;
+            f++;
+            frame_count++;
+            osfile.str("");
+            if (databaseType == "Demo")
+            {
+                getline(*groundtruth, s, ',');
+                x = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                w = atof(s.c_str());
+                getline(*groundtruth, s);
+                h = atof(s.c_str());
+                //cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
+                // Read images in a folder
+                osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
+                //cout << osfile.str() << endl;
             }
-            path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
-            // Read the groundtruth bbox
-            delete groundtruth;
-            groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
-            f = 1;
-            // Read the groundtruth bbox
-            getline(*groundtruth, s, ',');
-            x1 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y1 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x2 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y2 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x3 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            y3 = atof(s.c_str());
-            getline(*groundtruth, s, ',');
-            x4 = atof(s.c_str());
-            getline(*groundtruth, s);
-            y4 = atof(s.c_str());
-            x = std::min(x1, x4);
-            y = std::min(y1, y2);
-            w = std::max(x2, x3) - x;
-            h = std::max(y3, y4) - y;
-            //cout << x << " " << y << " " << w << " " << h << endl;
-            // Read images in a folder
-            osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
-            //cout << osfile.str() << endl;
+            else if (databaseType == "TLP")
+            {
+                // Read the groundtruth bbox
+                getline(*groundtruth, s, ',');
+                //f = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                x = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                w = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                h = atof(s.c_str());
+                getline(*groundtruth, s);
+                isLost = atof(s.c_str());
+                //cout << "gt:" << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
+                osfile << path << "/img/" << setw(5) << setfill('0') << f << ".jpg";
+                //cout << osfile.str() << endl;
+            }
+            else if (databaseType == "TB-2015")
+            {
+                getline(*groundtruth, s, ',');
+                x = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                w = atof(s.c_str());
+                getline(*groundtruth, s);
+                h = atof(s.c_str());
+                //cout << f << " " << x << " " << y << " " << w << " " << h << " " << isLost << endl;
+                // Read images in a folder
+                osfile << path << "/img/" << setw(4) << setfill('0') << f << ".jpg";
+                //cout << osfile.str() << endl;
+            }
+            else if (databaseType == "UAV123")
+            {
+                // Read the groundtruth bbox
+                getline(*groundtruth, s, ',');
+                x = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                w = atof(s.c_str());
+                getline(*groundtruth, s);
+                h = atof(s.c_str());
+                //cout << "gt:" << x << " " << y << " " << w << " " << h << endl;
+                // Read images in a folder
+                osfile << path << "/" << setw(6) << setfill('0') << f << ".jpg";
+                //cout << osfile.str() << endl;
+            }
+            else if (databaseType == "VOT-2017")
+            {
+                // Read the groundtruth bbox
+                getline(*groundtruth, s, ',');
+                x1 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y1 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                x2 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y2 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                x3 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                y3 = atof(s.c_str());
+                getline(*groundtruth, s, ',');
+                x4 = atof(s.c_str());
+                getline(*groundtruth, s);
+                y4 = atof(s.c_str());
+                x = std::min(x1, x4);
+                y = std::min(y1, y2);
+                w = std::max(x2, x3) - x;
+                h = std::max(y3, y4) - y;
+                //cout << x << " " << y << " " << w << " " << h << endl;
+                // Read images in a folder
+                osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
+                //cout << osfile.str() << endl;
+            }
             frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
-        }
-        bboxGroundtruth.x = x;
-        bboxGroundtruth.y = y;
-        bboxGroundtruth.width = w;
-        bboxGroundtruth.height = h;
+            bboxGroundtruth.x = x;
+            bboxGroundtruth.y = y;
+            bboxGroundtruth.width = w;
+            bboxGroundtruth.height = h;
 
-        if (state == 0) {
-            // burn_in
-            cout << "burn in:" << burn_in_count_down << std::endl;
-            if (burn_in_count_down == 0) {
-                burn_in_count_down = 10;
-                state = 1;
-            } else {
-                burn_in_count_down = burn_in_count_down - 1;
-            }
-            continue;
-        }
-        if (state == 2) {
-            // reset
-            cout << "reset:" << reset_count_down << std::endl;
-            if (reset_count_down == 0) {
-                reset_count_down = 5;
-#ifdef USE_MULTI_THREAD
-                void *status;
-                if (pthread_join(ecotracker->thread_train_, &status))
+            if (state == 0)
+            {
+                // burn_in
+                cout << "burn in:" << burn_in_count_down << std::endl;
+                if (burn_in_count_down == 0)
                 {
-                    cout << "Error:unable to join!" << std::endl;
-                    exit(-1);
+                    burn_in_count_down = 10;
+                    state = 1;
                 }
-#endif
-                delete ecotracker;
-                ecotracker = new ECO();
-                ecotracker->init(frame, bboxGroundtruth, parameters);
-                state = 0;
-            } else {
-                reset_count_down = reset_count_down - 1;
+                else
+                {
+                    burn_in_count_down = burn_in_count_down - 1;
+                }
+                continue;
             }
-            continue;
-        }
+            if (state == 2)
+            {
+                // reset
+                cout << "reset:" << reset_count_down << std::endl;
+                if (reset_count_down == 0)
+                {
+                    reset_count_down = 5;
+#ifdef USE_MULTI_THREAD
+                    void *status;
+                    if (pthread_join(ecotracker->thread_train_, &status))
+                    {
+                        cout << "Error:unable to join!" << std::endl;
+                        exit(-1);
+                    }
+#endif
+                    delete ecotracker;
+                    ecotracker = new ECO();
+                    ecotracker->init(frame, bboxGroundtruth, parameters);
+                    state = 0;
+                }
+                else
+                {
+                    reset_count_down = reset_count_down - 1;
+                }
+                continue;
+            }
 
-        // Calculate the metrics;
-        float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
-        float iou = metrics.iou(ecobbox, bboxGroundtruth);
-        
-        if (iou <= 0) {
-            cout << "fail:" << iou << std::endl;
-            state = 2;
-            continue;
-        }
+            // Calculate the metrics;
+            float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
+            float iou = metrics.iou(ecobbox, bboxGroundtruth);
 
-        CenterError.push_back(centererror);
-        Iou.push_back(iou);
-        FpsEco.push_back(fpseco);
-        valid_frame_count++;
+            if (iou <= 0)
+            {
+                cout << "fail:" << iou << std::endl;
+                state = 2;
+                continue;
+            }
 
-        cout << "iou:" << iou << std::endl;
+            CenterError.push_back(centererror);
+            Iou.push_back(iou);
+            FpsEco.push_back(fpseco);
+            valid_frame_count++;
 
-        if(centererror <= 20)
-        {
-            AvgPrecision++;
-        }
-        if(iou >= 0.5)
-        {
-            SuccessRate++;
-        }
-/*
+            cout << "iou:" << iou << std::endl;
+
+            if (centererror <= 20)
+            {
+                AvgPrecision++;
+            }
+            if (iou >= 0.5)
+            {
+                SuccessRate++;
+            }
+            /*
         if(f%10==0)
         {
             ecotracker.init(frame, bboxGroundtruth, parameters);
         }
 */
-    }
+        }
 #ifdef USE_MULTI_THREAD
-    void *status;
-    if (pthread_join(ecotracker->thread_train_, &status))
-    {
-         cout << "Error:unable to join!"  << std::endl;
-         exit(-1);
-    }
+        void *status;
+        if (pthread_join(ecotracker->thread_train_, &status))
+        {
+            cout << "Error:unable to join!" << std::endl;
+            exit(-1);
+        }
 #endif
+        delete ecotracker;
+        delete groundtruth;
+    }
+    
     AvgPrecision /= (float)(valid_frame_count);
     SuccessRate /= (float)(valid_frame_count);
     AvgIou = std::accumulate(Iou.begin(), Iou.end(), 0.0f) / Iou.size();
@@ -587,7 +568,5 @@ int main(int argc, char **argv)
          << " IniFps:" << fpsecoini
          << " AvgFps:" << AvgFps << std::endl;
 
-    delete ecotracker;
-    delete groundtruth;
     return 0;
 }
