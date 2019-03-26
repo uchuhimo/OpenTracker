@@ -4,10 +4,10 @@ CC=gcc
 CXX=g++
 
 LDFLAGS= `pkg-config --libs opencv` -lstdc++ -lm
-CXXFLAGS= -Wall `pkg-config --cflags opencv` -std=c++0x -lstdc++ -O3 -fPIC
+CXXFLAGS= -W `pkg-config --cflags opencv` -std=c++0x -lstdc++ -O3 -fPIC
 HEADERS = $(wildcard *.h) $(wildcard *.hpp)
 TARGET_LIB = libkcftracker.so
-OBJS = fhog.o kcftracker.o
+OBJS = fhog.o kcftracker.o metrics.o
 
 ifeq ($(USE_VOT_TRAX), 1)
 CXXFLAGS+= -ltrax

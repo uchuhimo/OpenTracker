@@ -10,7 +10,7 @@ CC=gcc
 CXX=g++
 
 LDFLAGS= `pkg-config --libs opencv` -lstdc++ -lm
-CXXFLAGS= -w -g -Wall `pkg-config --cflags opencv` -lstdc++ -lm -std=c++0x -O3 -fPIC 
+CXXFLAGS= -g -W `pkg-config --cflags opencv` -lstdc++ -lm -std=c++0x -O3 -fPIC 
 HEADERS = $(wildcard *.h) *.hpp $(wildcard kcf/*.h) $(wildcard eco/*.h)
 OBJS=kcf/fhog.o \
 	kcf/kcftracker.o \
