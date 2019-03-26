@@ -239,9 +239,9 @@ int main(int argc, char **argv)
         //waitKey(0);
         // Create KCFTracker:
         bool HOG = true, FIXEDWINDOW = true, MULTISCALE = true, LAB = true, DSST = false; //LAB color space features
-        KCFTracker kcftracker(HOG, FIXEDWINDOW, MULTISCALE, LAB, DSST);
+        KCFTracker *kcftracker = new KCFTracker(HOG, FIXEDWINDOW, MULTISCALE, LAB, DSST);
         Rect2d kcfbbox((int)bboxGroundtruth.x, (int)bboxGroundtruth.y, (int)bboxGroundtruth.width, (int)bboxGroundtruth.height);
-        kcftracker.init(frame, kcfbbox);
+        kcftracker->init(frame, kcfbbox);
 
         // 0: burn_in
         // 1: track
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
             // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
             //KCF=========================
             double timerkcf = (double)getTickCount();
-            bool okkcf = kcftracker.update(frame, kcfbbox);
+            bool okkcf = kcftracker->update(frame, kcfbbox);
             float fpskcf = getTickFrequency() / ((double)getTickCount() - timerkcf);
             // if (okkcf)
             // {
@@ -434,7 +434,9 @@ int main(int argc, char **argv)
                 if (reset_count_down == 0)
                 {
                     reset_count_down = 5;
-                    kcftracker.init(frame, bboxGroundtruth);
+                    delete kcftracker;
+                    kcftracker = new KCFTracker(HOG, FIXEDWINDOW, MULTISCALE, LAB, DSST);
+                    kcftracker->init(frame, bboxGroundtruth);
                     state = 0;
                 }
                 else
@@ -477,6 +479,8 @@ int main(int argc, char **argv)
         }
 */
         }
+        delete kcftracker;
+        delete groundtruth;
     }
 
     AvgPrecision /= (float)(valid_frame_count);
