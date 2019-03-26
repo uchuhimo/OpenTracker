@@ -459,39 +459,39 @@ int main(int argc, char **argv)
         bboxGroundtruth.width = w;
         bboxGroundtruth.height = h;
 
-        // if (state == 0) {
-        //     // burn_in
-        //     cout << "burn in:" << burn_in_count_down << std::endl;
-        //     if (burn_in_count_down == 0) {
-        //         burn_in_count_down = 10;
-        //         state = 1;
-        //     } else {
-        //         burn_in_count_down = burn_in_count_down - 1;
-        //     }
-        //     continue;
-        // }
-        // if (state == 2) {
-        //     // reset
-        //     cout << "reset:" << reset_count_down << std::endl;
-        //     if (reset_count_down == 0) {
-        //         reset_count_down = 5;
-        //         ecotracker.init(frame, bboxGroundtruth, parameters);
-        //         state = 0;
-        //     } else {
-        //         reset_count_down = reset_count_down - 1;
-        //     }
-        //     continue;
-        // }
+        if (state == 0) {
+            // burn_in
+            cout << "burn in:" << burn_in_count_down << std::endl;
+            if (burn_in_count_down == 0) {
+                burn_in_count_down = 10;
+                state = 1;
+            } else {
+                burn_in_count_down = burn_in_count_down - 1;
+            }
+            continue;
+        }
+        if (state == 2) {
+            // reset
+            cout << "reset:" << reset_count_down << std::endl;
+            if (reset_count_down == 0) {
+                reset_count_down = 5;
+                // ecotracker.init(frame, bboxGroundtruth, parameters);
+                state = 0;
+            } else {
+                reset_count_down = reset_count_down - 1;
+            }
+            continue;
+        }
 
         // Calculate the metrics;
         float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
         float iou = metrics.iou(ecobbox, bboxGroundtruth);
         
-        // if (iou <= 0) {
-        //     cout << "fail:" << iou << std::endl;
-        //     state = 2;
-        //     continue;
-        // }
+        if (iou <= 0) {
+            cout << "fail:" << iou << std::endl;
+            state = 2;
+            continue;
+        }
 
         CenterError.push_back(centererror);
         Iou.push_back(iou);
