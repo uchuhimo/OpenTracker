@@ -32,9 +32,11 @@ int main(int argc, char **argv)
     float x, y, w, h;
     float x1, y1, x2, y2, x3, y3, x4, y4; //gt for vot
     std::string s;
+    std::string folderVOT;
     std::string path;
     ifstream *groundtruth;
     ostringstream osfile;
+    ifstream sequenceFile("list.txt");
     if (databaseType == "Demo")
     {
         path = "../sequences/Crossing";
@@ -76,7 +78,8 @@ int main(int argc, char **argv)
     }
     else if (databaseType == "VOT-2017")
     {
-        string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
+        // string folderVOT = "girl";//"glove";//"ants3";//"drone1";//"iceskater1";//"road";//"bag";//"helicopter";
+        std::getline(sequenceFile, folderVOT);
         path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
         // Read the groundtruth bbox
         groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
@@ -293,8 +296,9 @@ int main(int argc, char **argv)
     int32_t burn_in_count_down = 10;
     int32_t reset_count_down = 5;
     int32_t valid_frame_count = 0;
+    int32_t frame_count = 0;
 
-    while (frame.data)
+    while (true)
     {
         // frame.copyTo(frameDraw); // only copy can do the real copy, just equal not.
         timereco = (double)getTickCount();
@@ -359,6 +363,7 @@ int main(int argc, char **argv)
         // Read next image======================================================
         cout << "Frame:" << f << " FPS:" << fpseco << endl;
         f++;
+        frame_count++;
         osfile.str("");
         if (databaseType == "Demo")
         {
@@ -454,6 +459,43 @@ int main(int argc, char **argv)
             //cout << osfile.str() << endl;
         }
         frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
+        if (!frame.data) {
+            if (!std::getline(sequenceFile, folderVOT)) {
+                frame_count--;
+                break;
+            }
+            path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
+            // Read the groundtruth bbox
+            delete groundtruth;
+            groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+            f = 1;
+            // Read the groundtruth bbox
+            getline(*groundtruth, s, ',');
+            x1 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y1 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x2 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y2 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x3 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            y3 = atof(s.c_str());
+            getline(*groundtruth, s, ',');
+            x4 = atof(s.c_str());
+            getline(*groundtruth, s);
+            y4 = atof(s.c_str());
+            x = std::min(x1, x4);
+            y = std::min(y1, y2);
+            w = std::max(x2, x3) - x;
+            h = std::max(y3, y4) - y;
+            //cout << x << " " << y << " " << w << " " << h << endl;
+            // Read images in a folder
+            osfile << path << "/" << setw(8) << setfill('0') << f << ".jpg";
+            //cout << osfile.str() << endl;
+            frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
+        }
         bboxGroundtruth.x = x;
         bboxGroundtruth.y = y;
         bboxGroundtruth.width = w;
@@ -537,7 +579,7 @@ int main(int argc, char **argv)
     SuccessRate /= (float)(valid_frame_count);
     AvgIou = std::accumulate(Iou.begin(), Iou.end(), 0.0f) / Iou.size();
     AvgFps = std::accumulate(FpsEco.begin(), FpsEco.end(), 0.0f) / FpsEco.size();
-    cout << "Frames:" << f - 2
+    cout << "Frames:" << frame_count
          << " ValidFrames:" << valid_frame_count
          << " AvgPrecision:" << AvgPrecision
          << " AvgIou:" << AvgIou
