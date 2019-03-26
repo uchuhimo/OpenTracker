@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     int32_t valid_frame_count = 0;
     int32_t frame_count = 0;
 
-    while(true){
+    while(true) {
         if (databaseType == "Demo")
         {
             path = "../sequences/Crossing";
@@ -565,7 +565,7 @@ int main(int argc, char **argv)
          << " AvgPrecision:" << AvgPrecision
          << " AvgIou:" << AvgIou
          << " SuccessRate:" << SuccessRate
-         << " IniFps:" << fpsecoini
+        //  << " IniFps:" << fpsecoini
          << " AvgFps:" << AvgFps << std::endl;
 
     return 0;
