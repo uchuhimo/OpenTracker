@@ -112,10 +112,10 @@ int main(int argc, char **argv)
             x4 = atof(s.c_str());
             getline(*groundtruth, s);
             y4 = atof(s.c_str());
-            x = std::min(x1, x2);
-            y = std::min(y1, y4);
-            w = std::max(x1, x2) - x;
-            h = std::max(y1, y4) - y;
+            x = std::min({x1, x2, x3, x4});
+            y = std::min({y1, y2, y3, y4});
+            w = std::max({x1, x2, x3, x4}) - x;
+            h = std::max({y1, y2, y3, y4}) - y;
             cout << x << " " << y << " " << w << " " << h << endl;
             assert(x >= 0 && y >= 0 && w > 0 && h > 0);
             // Read images in a folder
@@ -397,10 +397,10 @@ int main(int argc, char **argv)
                 x4 = atof(s.c_str());
                 getline(*groundtruth, s);
                 y4 = atof(s.c_str());
-                x = std::min(x1, x2);
-                y = std::min(y1, y4);
-                w = std::max(x1, x2) - x;
-                h = std::max(y1, y4) - y;
+                x = std::min({x1, x2, x3, x4});
+                y = std::min({y1, y2, y3, y4});
+                w = std::max({x1, x2, x3, x4}) - x;
+                h = std::max({y1, y2, y3, y4}) - y;
                 cout << x << " " << y << " " << w << " " << h << endl;
                 assert(x >= 0 && y >= 0 && w > 0 && h > 0);
                 // Read images in a folder

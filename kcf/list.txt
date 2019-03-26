@@ -12,7 +12,6 @@ bolt2
 book
 butterfly
 car1
-conduction1
 crabs1
 crossing
 dinosaur
