@@ -1,0 +1,1 @@
+while read in; do ./runkcftracker.bin $1 $in & done < list.txt

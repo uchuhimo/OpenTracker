@@ -32,9 +32,11 @@ int main(int argc, char **argv)
     float x, y, w, h;
     float x1, y1, x2, y2, x3, y3, x4, y4; //gt for vot
     std::string s;
-    std::string folderVOT;
+    std::string basePath = argv[1];
+    std::string folderVOT = argv[2];
     std::string path;
     ifstream *groundtruth;
+    fstream result;
     ostringstream osfile;
     ifstream sequenceFile("list.txt");
     int32_t valid_frame_count = 0;
@@ -85,13 +87,17 @@ int main(int argc, char **argv)
         else if (databaseType == "VOT-2017")
         {
             // string folderVOT = "girl"; //"iceskater1";//"road";//"drone1";//"iceskater1";//"girl"; //"road";//"bag";////"helicopter";
-            if (!std::getline(sequenceFile, folderVOT) || folderVOT == "")
-            {
-                break;
-            }
-            path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
+            // if (!std::getline(sequenceFile, folderVOT) || folderVOT == "")
+            // {
+            //     break;
+            // }
+            // path = "/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/color";
+            path = basePath + folderVOT + "/color";
             // Read the groundtruth bbox
-            groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+            // groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
+            groundtruth = new ifstream(basePath + folderVOT + "/groundtruth.txt");
+            result.open(basePath + folderVOT + "/eco_result.csv", fstream::in | fstream::out | fstream::trunc);
+            result << "state" << "," << "iou" << "," << "centererror" << "," << "fps" << std::endl;
             f = 1;
             if (!getline(*groundtruth, s, ','))
             {
@@ -425,6 +431,7 @@ int main(int argc, char **argv)
                 {
                     burn_in_count_down = burn_in_count_down - 1;
                 }
+                result << state << "," << 0 << "," << 0 << "," << fpskcf << std::endl;
                 continue;
             }
             if (state == 2)
@@ -443,6 +450,7 @@ int main(int argc, char **argv)
                 {
                     reset_count_down = reset_count_down - 1;
                 }
+                result << state << "," << 0 << "," << 0 << "," << fpskcf << std::endl;
                 continue;
             }
 
@@ -454,6 +462,7 @@ int main(int argc, char **argv)
             {
                 cout << "fail:" << iou << std::endl;
                 state = 2;
+                result << 3 << "," << iou << "," << centererror << "," << fpskcf << std::endl;
                 continue;
             }
 
@@ -463,6 +472,7 @@ int main(int argc, char **argv)
             valid_frame_count++;
 
             cout << "iou:" << iou << std::endl;
+            result << state << "," << iou << "," << centererror << "," << fpskcf << std::endl;
 
             if (centererror <= 20)
             {
@@ -479,8 +489,10 @@ int main(int argc, char **argv)
         }
 */
         }
+        result.close();
         delete kcftracker;
         delete groundtruth;
+        break;
     }
 
     AvgPrecision /= (float)(valid_frame_count);
