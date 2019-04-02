@@ -96,7 +96,7 @@ int main(int argc, char **argv)
             // Read the groundtruth bbox
             // groundtruth = new ifstream("/home/yxqiu/data/VOT/vot2017/" + folderVOT + "/groundtruth.txt");
             groundtruth = new ifstream(basePath + folderVOT + "/groundtruth.txt");
-            result.open(basePath + folderVOT + "/eco_result.csv", fstream::in | fstream::out | fstream::trunc);
+            result.open(basePath + folderVOT + "/kcf_result.csv", fstream::in | fstream::out | fstream::trunc);
             result << "state" << "," << "iou" << "," << "centererror" << "," << "fps" << std::endl;
             f = 1;
             if (!getline(*groundtruth, s, ','))
