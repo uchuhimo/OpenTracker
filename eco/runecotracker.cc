@@ -486,10 +486,15 @@ int main(int argc, char **argv)
             bboxGroundtruth.width = w;
             bboxGroundtruth.height = h;
 
+            // Calculate the metrics;
+            float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
+            float iou = metrics.iou(ecobbox, bboxGroundtruth);
+
             if (state == 0)
             {
                 // burn_in
                 cout << "burn in:" << burn_in_count_down << std::endl;
+                result << state << "," << iou << "," << centererror << "," << fpseco << std::endl;
                 if (burn_in_count_down == 0)
                 {
                     burn_in_count_down = 10;
@@ -499,13 +504,13 @@ int main(int argc, char **argv)
                 {
                     burn_in_count_down = burn_in_count_down - 1;
                 }
-                result << state << "," << 0 << "," << 0 << "," << fpseco << std::endl;
                 continue;
             }
             if (state == 2)
             {
                 // reset
                 cout << "reset:" << reset_count_down << std::endl;
+                result << state << "," << iou << "," << centererror << "," << fpseco << std::endl;
                 if (reset_count_down == 0)
                 {
                     reset_count_down = 5;
@@ -526,13 +531,8 @@ int main(int argc, char **argv)
                 {
                     reset_count_down = reset_count_down - 1;
                 }
-                result << state << "," << 0 << "," << 0 << "," << fpseco << std::endl;
                 continue;
             }
-
-            // Calculate the metrics;
-            float centererror = metrics.center_error(ecobbox, bboxGroundtruth);
-            float iou = metrics.iou(ecobbox, bboxGroundtruth);
 
             if (iou <= 0)
             {
