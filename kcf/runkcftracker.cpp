@@ -418,11 +418,16 @@ int main(int argc, char **argv)
             bboxGroundtruth.height = h;
             frame = cv::imread(osfile.str().c_str(), CV_LOAD_IMAGE_UNCHANGED);
 
+            // Calculate the metrics;
+            float centererror = metrics.center_error(kcfbbox, bboxGroundtruth);
+            float iou = metrics.iou(kcfbbox, bboxGroundtruth);
+
             if (state == 0)
             {
                 // burn_in
                 cout << "burn in:" << burn_in_count_down << std::endl;
-                if (burn_in_count_down == 0)
+                result << state << "," << iou << "," << centererror << "," << fpskcf << std::endl;
+                if (burn_in_count_down == 1)
                 {
                     burn_in_count_down = 10;
                     state = 1;
@@ -431,14 +436,14 @@ int main(int argc, char **argv)
                 {
                     burn_in_count_down = burn_in_count_down - 1;
                 }
-                result << state << "," << 0 << "," << 0 << "," << fpskcf << std::endl;
                 continue;
             }
             if (state == 2)
             {
                 // reset
                 cout << "reset:" << reset_count_down << std::endl;
-                if (reset_count_down == 0)
+                result << state << "," << iou << "," << centererror << "," << fpskcf << std::endl;
+                if (reset_count_down == 1)
                 {
                     reset_count_down = 5;
                     delete kcftracker;
@@ -450,13 +455,8 @@ int main(int argc, char **argv)
                 {
                     reset_count_down = reset_count_down - 1;
                 }
-                result << state << "," << 0 << "," << 0 << "," << fpskcf << std::endl;
                 continue;
             }
-
-            // Calculate the metrics;
-            float centererror = metrics.center_error(kcfbbox, bboxGroundtruth);
-            float iou = metrics.iou(kcfbbox, bboxGroundtruth);
 
             if (iou <= 0)
             {

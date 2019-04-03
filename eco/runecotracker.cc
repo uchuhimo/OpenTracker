@@ -495,7 +495,7 @@ int main(int argc, char **argv)
                 // burn_in
                 cout << "burn in:" << burn_in_count_down << std::endl;
                 result << state << "," << iou << "," << centererror << "," << fpseco << std::endl;
-                if (burn_in_count_down == 0)
+                if (burn_in_count_down == 1)
                 {
                     burn_in_count_down = 10;
                     state = 1;
@@ -511,7 +511,7 @@ int main(int argc, char **argv)
                 // reset
                 cout << "reset:" << reset_count_down << std::endl;
                 result << state << "," << iou << "," << centererror << "," << fpseco << std::endl;
-                if (reset_count_down == 0)
+                if (reset_count_down == 1)
                 {
                     reset_count_down = 5;
 #ifdef USE_MULTI_THREAD
